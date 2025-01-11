@@ -16,7 +16,7 @@ public class Mensajes {
     public String getMensaje(String aEtiqueta) {
         try {
             if (messageSource != null && aEtiqueta != null) {
-                return messageSource.getMessage(aEtiqueta, (Object[])null, LocaleContextHolder.getLocale());
+                return messageSource.getMessage(aEtiqueta, null, LocaleContextHolder.getLocale());
             } else {
                 return  "[" + aEtiqueta + "]";
             }
