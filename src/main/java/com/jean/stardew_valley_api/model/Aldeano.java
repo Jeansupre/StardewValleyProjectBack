@@ -27,18 +27,23 @@ public class Aldeano implements Serializable {
     @Column(name = "nombre", nullable = false, length = 250)
     private String nombre;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_estacion_cumple", nullable = false)
-    private Estacion idEstacionCumple;
+    @Column(name = "id_estacion_cumple", nullable = false)
+    private Long idEstacionCumple;
+
+    @Column(name = "id_direccion", nullable = false)
+    private Long idDireccion;
 
     @Column(name = "dia_cumple", nullable = false)
     private Long diaCumple;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_direccion", nullable = false)
-    private Direccion idDireccion;
-
     @Column(name = "imagen", nullable = false)
     private byte[] imagen;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_estacion_cumple", insertable=false, updatable=false)
+    private Estacion estacionCumple;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_direccion", insertable=false, updatable=false)
+    private Direccion direccion;
 }

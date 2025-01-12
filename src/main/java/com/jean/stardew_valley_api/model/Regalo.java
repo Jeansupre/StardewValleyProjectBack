@@ -24,16 +24,25 @@ public class Regalo implements Serializable {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_item", nullable = false)
-    private Item idItem;
+    @Column(name = "id_item", nullable = false)
+    private Long idItem;
+
+    @Column(name = "id_aldeano", nullable = false)
+    private Long idAldeano;
+
+    @Column(name = "id_preferencia", nullable = false)
+    private Long idPreferencia;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_aldeano", nullable = false)
-    private Aldeano idAldeano;
+    @JoinColumn(name = "id_item", insertable=false, updatable=false)
+    private Item item;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_preferencia", nullable = false)
-    private Preferencia idPreferencia;
+    @JoinColumn(name = "id_aldeano", insertable=false, updatable=false)
+    private Aldeano aldeano;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_preferencia", insertable=false, updatable=false)
+    private Preferencia preferencia;
 
 }

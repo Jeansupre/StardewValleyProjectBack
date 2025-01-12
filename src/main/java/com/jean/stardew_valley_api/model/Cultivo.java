@@ -24,17 +24,14 @@ public class Cultivo implements Serializable {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_item", nullable = false)
-    private Item idItem;
+    @Column(name = "id_item", nullable = false)
+    private Long idItem;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_semilla", nullable = false)
-    private Item idSemilla;
+    @Column(name = "id_semilla", nullable = false)
+    private Long idSemilla;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_estacion", nullable = false)
-    private Estacion idEstacion;
+    @Column(name = "id_estacion", nullable = false)
+    private Long idEstacion;
 
     @Column(name = "tiempo_crecer", nullable = false)
     private Long tiempoCrecer;
@@ -45,4 +42,18 @@ public class Cultivo implements Serializable {
     @Column(name = "tiempo_volver_crecer")
     private Long tiempoVolverCrecer;
 
+    @Column(name = "codigo", nullable = false)
+    private String codigo;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_item", insertable=false, updatable=false)
+    private Item item;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_semilla", insertable=false, updatable=false)
+    private Item semilla;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_estacion", insertable=false, updatable=false)
+    private Estacion estacion;
 }

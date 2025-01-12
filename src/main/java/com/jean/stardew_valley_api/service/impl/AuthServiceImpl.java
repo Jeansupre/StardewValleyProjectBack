@@ -25,7 +25,7 @@ public class AuthServiceImpl implements IAuthService {
 
     private UsuarioRol checkearUsuario(LoginRequestDTO loginRequestDTO) {
         if (loginRequestDTO == null) {
-            throw new TechnicalException(ITools.getMensaje("OBJETO_NULL"));
+            throw new TechnicalException(ITools.getMensaje("OBJECT_NULL"));
         }
         UsuarioRol usuarioRol = usuarioRolRepository.findUsuarioByUsername(loginRequestDTO.getUsername());
         //check password
