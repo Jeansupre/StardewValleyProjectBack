@@ -2,18 +2,14 @@ package com.jean.stardew_valley_api.service.impl;
 
 import com.jean.stardew_valley_api.dto.CrearAldeanoRequestDTO;
 import com.jean.stardew_valley_api.dto.CrearCategoriasRequestDTO;
+import com.jean.stardew_valley_api.dto.CrearItemRequestDTO;
 import com.jean.stardew_valley_api.dto.CrearUsuarioDTO;
 import com.jean.stardew_valley_api.exceptions.AuthException;
 import com.jean.stardew_valley_api.mappers.IAldeanoMapper;
+import com.jean.stardew_valley_api.mappers.IItemMapper;
 import com.jean.stardew_valley_api.mappers.IUsuarioMapper;
-import com.jean.stardew_valley_api.model.Aldeano;
-import com.jean.stardew_valley_api.model.Categoria;
-import com.jean.stardew_valley_api.model.Usuario;
-import com.jean.stardew_valley_api.model.UsuarioRol;
-import com.jean.stardew_valley_api.repository.IAldeanoRepository;
-import com.jean.stardew_valley_api.repository.ICategoriaRepository;
-import com.jean.stardew_valley_api.repository.IUsuarioRepository;
-import com.jean.stardew_valley_api.repository.IUsuarioRolRepository;
+import com.jean.stardew_valley_api.model.*;
+import com.jean.stardew_valley_api.repository.*;
 import com.jean.stardew_valley_api.service.interfaces.IAdminService;
 import com.jean.stardew_valley_api.util.Constantes;
 import com.jean.stardew_valley_api.util.ITools;
@@ -38,14 +34,42 @@ public class AdminServiceImpl implements IAdminService {
     private final ICategoriaRepository categoriaRepository;
     private final IAldeanoRepository aldeanoRepository;
     private final IUsuarioRepository usuarioRepository;
-    private final JwtService jwtService;
+    private final IItemRepository itemRepository;
 
     private final IAldeanoMapper aldeanoMapper;
     private final IUsuarioMapper usuarioMapper;
+    private final IItemMapper itemMapper;
+
+    private final JwtService jwtService;
 
     private final HttpServletRequest httpServletRequest;
 
     private static final String INVALID_TOKEN = "INVALID_TOKEN";
+
+    /**
+     * Metodo para verificar si el usuario es administrador, toma el token del header Authorization y valida
+     * si el usuario tiene el rol de ADMIN
+     */
+    @Transactional
+    public void verificacionAdmin() {
+        String token = this.httpServletRequest.getHeader(Constantes.HEADER_TOKEN);
+        if (token == null || !token.startsWith("Bearer ")) {
+            log.error(ITools.getMensaje(INVALID_TOKEN));
+            throw new AuthException(ITools.getMensaje(INVALID_TOKEN));
+        }
+        String jwt = token.substring(7);
+        if (!jwtService.isTokenValid(jwt)) {
+            log.error(ITools.getMensaje(INVALID_TOKEN));
+            throw new AuthException(ITools.getMensaje(INVALID_TOKEN));
+        }
+        Claims claims = jwtService.extractPayload(jwt);
+        UsuarioRol usuarioRol = usuarioRolRepository
+                .findUsuarioRolByIdUsuario(claims.get("ID_USUARIO", Long.class));
+        if (!usuarioRol.getRol().getCodigo().equals("ADMIN")) {
+            log.error(ITools.getMensaje("NOT_AUTH"));
+            throw new AuthException(ITools.getMensaje("NOT_AUTH"));
+        }
+    }
 
     /**
      * Metodo para crear un usuario
@@ -117,27 +141,23 @@ public class AdminServiceImpl implements IAdminService {
     }
 
     /**
-     * Metodo para verificar si el usuario es administrador, toma el token del header Authorization y valida
-     * si el usuario tiene el rol de ADMIN
+     * Metodo para crear un item
+     *
+     * @param crearItemRequestDTO DTO con los datos del item a crear
+     * @param img                    Imagen del item
+     * @return {@code true} si se creo el item
      */
-    @Transactional
-    public void verificacionAdmin() {
-        String token = this.httpServletRequest.getHeader(Constantes.HEADER_TOKEN);
-        if (token == null || !token.startsWith("Bearer ")) {
-            log.error(ITools.getMensaje(INVALID_TOKEN));
-            throw new AuthException(ITools.getMensaje(INVALID_TOKEN));
+    @Override
+    public Boolean crearItem(CrearItemRequestDTO crearItemRequestDTO, MultipartFile img) throws IOException {
+        try {
+            byte[] imgByte = img.getBytes();
+            Item itemCrear = itemMapper.crearItemRequestDTOtoItem(crearItemRequestDTO);
+            itemCrear.setImagen(imgByte);
+            itemRepository.save(itemCrear);
+        } catch (Exception e) {
+            log.error(ITools.getMensaje("ERROR_CREATE_ITEM"), e);
+            throw e;
         }
-        String jwt = token.substring(7);
-        if (!jwtService.isTokenValid(jwt)) {
-            log.error(ITools.getMensaje(INVALID_TOKEN));
-            throw new AuthException(ITools.getMensaje(INVALID_TOKEN));
-        }
-        Claims claims = jwtService.extractPayload(jwt);
-        UsuarioRol usuarioRol = usuarioRolRepository
-                .findUsuarioRolByIdUsuario(claims.get("ID_USUARIO", Long.class));
-        if (!usuarioRol.getRol().getCodigo().equals("ADMIN")) {
-            log.error(ITools.getMensaje("NOT_AUTH"));
-            throw new AuthException(ITools.getMensaje("NOT_AUTH"));
-        }
+        return true;
     }
 }

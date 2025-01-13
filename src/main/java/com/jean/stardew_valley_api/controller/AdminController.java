@@ -3,6 +3,7 @@ package com.jean.stardew_valley_api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jean.stardew_valley_api.dto.CrearAldeanoRequestDTO;
 import com.jean.stardew_valley_api.dto.CrearCategoriasRequestDTO;
+import com.jean.stardew_valley_api.dto.CrearItemRequestDTO;
 import com.jean.stardew_valley_api.dto.CrearUsuarioDTO;
 import com.jean.stardew_valley_api.security.annotations.RequireJwtVerification;
 import com.jean.stardew_valley_api.service.interfaces.IAdminService;
@@ -89,11 +90,28 @@ public class AdminController {
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
 
-    /*@PostMapping("/crearItem")
-    public ResponseEntity<Boolean> crearItem() {
-        Boolean resultado = adminService.crearItem();
+    @Operation(
+            summary = "crearItem",
+            description = "Endpoint para crear un item",
+            tags = {"Admin"},
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "true si se creó el item",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            ))
+            }
+    )
+    @PostMapping("/crearItem")
+    public ResponseEntity<Boolean> crearItem(@RequestPart("data") String jsonData,
+                                             @RequestPart("img") MultipartFile img) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        CrearItemRequestDTO crearItemRequestDTO = mapper.readValue(jsonData, CrearItemRequestDTO.class);
+
+        Boolean resultado = adminService.crearItem(crearItemRequestDTO, img);
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
-    }*/
+    }
 
     /*@PostMapping("/crearCultivo")
     public ResponseEntity<Boolean> crearCultivo() {
