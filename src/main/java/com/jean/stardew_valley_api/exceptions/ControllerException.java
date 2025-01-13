@@ -5,15 +5,10 @@ import com.jean.stardew_valley_api.dto.ErrorDTO;
 import com.jean.stardew_valley_api.util.ITools;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.TransientPropertyValueException;
-import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.exception.GenericJDBCException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -30,11 +25,7 @@ import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 @RestControllerAdvice
@@ -47,12 +38,12 @@ public class ControllerException extends Exception implements Serializable {
     private static final String TIPO_ERROR = "error";
 
     /**
-     * Se lanza cuando los parámetros de entrada al contralador son inválidos, es
+     * Se lanza cuando los parámetros de entrada al controlador son inválidos, es
      * decir cuando se comparan con las anotaciones del Mapeo y resulta inválido al
      * ingresar como RequestBody a la capa
      *
      * @param request: petición del contexto para atrapar si va hacia alguna página
-     * @param e        excepcion que se lanza
+     * @param e        excepción que se lanza
      * @return ResponseEntity<>
      */
     @ExceptionHandler({MethodArgumentNotValidException.class})
@@ -142,6 +133,8 @@ public class ControllerException extends Exception implements Serializable {
     @ExceptionHandler({SQLException.class})
     public ResponseEntity<ErrorDTO> transaccionNoExitosaErroresDB(HttpServletRequest request, Exception e) {
 
+        saveExceptionLog(e, null, true);
+        
         final HttpStatus codigoHttp = HttpStatus.BAD_REQUEST;
 
         return new ResponseEntity<>(
@@ -257,10 +250,8 @@ public class ControllerException extends Exception implements Serializable {
 
             claseConPaquete = handlerMethod.getMethod().getDeclaringClass().getName();
             metodo = handlerMethod.getMethod().getName();
-            linea = null;
-            error = null;
 
-            writeExceptionLogFile(claseConPaquete, metodo, linea, error);
+            writeExceptionLogFile(claseConPaquete, metodo, null, null);
         }
     }
 

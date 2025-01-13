@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Schema(name = "CrearCategoriasRequestDTO", description = "DTO para crear varias categorias")
 public class CrearCategoriasRequestDTO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -4822877250683773556L;
 
     @Schema(description = "Nombres de las categorias", example = "[\"Frutas\", \"Cocina\"]")
