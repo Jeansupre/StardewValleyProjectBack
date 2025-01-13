@@ -2,9 +2,12 @@ package com.jean.stardew_valley_api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jean.stardew_valley_api.dto.CrearAldeanoRequestDTO;
+import com.jean.stardew_valley_api.dto.CrearCategoriasRequestDTO;
 import com.jean.stardew_valley_api.dto.CrearUsuarioDTO;
+import com.jean.stardew_valley_api.security.annotations.RequireJwtVerification;
 import com.jean.stardew_valley_api.service.interfaces.IAdminService;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequestMapping("/api/admin")
+@RequireJwtVerification
 @RequiredArgsConstructor
 public class AdminController {
 
@@ -30,44 +34,70 @@ public class AdminController {
             description = "Endpoint para crear un usuario",
             tags = {"Admin"},
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Usuario creado",
-                            content = @Content(mediaType = "text/plain")),
-                    @ApiResponse(responseCode = "409", description = "Error al crear el usuario",
-                            content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "201", description = "true si se creo el usuario",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            ))
             }
     )
     @PostMapping("/crearUsuario")
-    public ResponseEntity<String> crearUsuario(@Valid @RequestBody CrearUsuarioDTO crearUsuarioDTO) {
-        var resultado = adminService.crearUsuario(crearUsuarioDTO);
-        if (Boolean.TRUE.equals(resultado)) {
-            return new ResponseEntity<>("Usuario creado", HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>("Error al crear el usuario", HttpStatus.CONFLICT);
-        }
+    public ResponseEntity<Boolean> crearUsuario(@Valid @RequestBody CrearUsuarioDTO crearUsuarioDTO) {
+        Boolean resultado = adminService.crearUsuario(crearUsuarioDTO);
+        return new ResponseEntity<>(resultado, HttpStatus.CREATED);
+
     }
 
+    @Operation(
+            summary = "crearAldeano",
+            description = "Endpoint para crear un aldeano",
+            tags = {"Admin"},
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "true si se creo el aldeano",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            ))
+            }
+    )
     @PostMapping("/crearAldeano")
-    public ResponseEntity<String> crearAldeano(@RequestPart("data") String jsonData,
+    public ResponseEntity<Boolean> crearAldeano(@RequestPart("data") String jsonData,
                                                @RequestPart("img") MultipartFile img) throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
         CrearAldeanoRequestDTO crearAldeanoRequestDTO = mapper.readValue(jsonData, CrearAldeanoRequestDTO.class);
 
-        var resultado = adminService.crearAldeano(crearAldeanoRequestDTO, img);
-        if (Boolean.TRUE.equals(resultado)) {
-            return new ResponseEntity<>("Aldeano creado", HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>("Error al crear el aldeano", HttpStatus.CONFLICT);
-        }
+        Boolean resultado = adminService.crearAldeano(crearAldeanoRequestDTO, img);
+        return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
 
-    @PostMapping("/crearCultivo")
-    public ResponseEntity<String> crearCultivo() {
-        return new ResponseEntity<>("Cultivo creado", HttpStatus.CREATED);
+    @Operation(
+            summary = "crearCategorias",
+            description = "Endpoint para crear una o varias categorias a la vez",
+            tags = {"Admin"},
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "true si se crearon las categorias",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            ))
+            }
+    )
+    @PostMapping("/crearCategorias")
+    public ResponseEntity<Boolean> crearCategorias(@RequestBody CrearCategoriasRequestDTO crearCategoriasRequestDTO) {
+        Boolean resultado = adminService.crearCategorias(crearCategoriasRequestDTO);
+        return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
 
-    @PostMapping("/crearItem")
-    public ResponseEntity<String> crearItem() {
-        return new ResponseEntity<>("Item creado", HttpStatus.CREATED);
-    }
+    /*@PostMapping("/crearItem")
+    public ResponseEntity<Boolean> crearItem() {
+        Boolean resultado = adminService.crearItem();
+        return new ResponseEntity<>(resultado, HttpStatus.CREATED);
+    }*/
+
+    /*@PostMapping("/crearCultivo")
+    public ResponseEntity<Boolean> crearCultivo() {
+        Boolean resultado = adminService.crearCultivo();
+        return new ResponseEntity<>(resultado, HttpStatus.CREATED);
+    }*/
 }

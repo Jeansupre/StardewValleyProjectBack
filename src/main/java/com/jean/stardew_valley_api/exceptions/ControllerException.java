@@ -187,7 +187,7 @@ public class ControllerException extends Exception implements Serializable {
      * Esta excepción se relanza al cliente cuando hay una transacción no exitosa
      * que alguien quiera relanzar o un error técnico
      */
-    @ExceptionHandler({TechnicalException.class, IOException.class})
+    @ExceptionHandler({TechnicalException.class, IOException.class, IllegalArgumentException.class})
     public ResponseEntity<ErrorDTO> transaccioNoExitosaOErrorTecnicoAtrapado(Exception e,
                                                                              HandlerMethod handlerMethod) {
         final HttpStatus codigoHttp = HttpStatus.CONFLICT;
@@ -262,7 +262,6 @@ public class ControllerException extends Exception implements Serializable {
 
             writeExceptionLogFile(claseConPaquete, metodo, linea, error);
         }
-
     }
 
     /**
