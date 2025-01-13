@@ -10,7 +10,7 @@ public class TechnicalException extends RuntimeException{
     private static final long serialVersionUID = 5841953166572722091L;
 
     public TechnicalException() {
-        super(ITools.getMensaje("ERROR_TECNICO"));
+        super(ITools.getMensaje("TECH_ERROR"));
     }
 
     public TechnicalException(String aMensaje) {

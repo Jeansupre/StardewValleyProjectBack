@@ -24,11 +24,16 @@ public class Direccion implements Serializable {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_ubicacion", nullable = false)
-    private Ubicacion idUbicacion;
+    @Column(name = "id_ubicacion", nullable = false)
+    private Long idUbicacion;
 
     @Column(name = "direccion", length = 250)
     private String casa;
 
+    @Column(name = "codigo", nullable = false)
+    private String codigo;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_ubicacion", insertable=false, updatable=false)
+    private Ubicacion ubicacion;
 }

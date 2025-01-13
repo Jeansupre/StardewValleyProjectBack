@@ -30,11 +30,16 @@ public class Item implements Serializable {
     @Column(name = "precio_base", nullable = false)
     private Long precioBase;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_categoria", nullable = false)
-    private Categoria idCategoria;
+    @Column(name = "id_categoria", nullable = false)
+    private Long idCategoria;
 
     @Column(name = "imagen", nullable = false)
     private byte[] imagen;
 
+    @Column(name = "codigo", nullable = false)
+    private String codigo;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_categoria", insertable=false, updatable=false)
+    private Categoria categoria;
 }

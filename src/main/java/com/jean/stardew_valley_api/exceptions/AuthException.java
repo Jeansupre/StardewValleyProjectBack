@@ -9,7 +9,7 @@ public class AuthException extends RuntimeException {
     private static final long serialVersionUID = 5841953166572722091L;
 
     public AuthException() {
-        super(ITools.getMensaje("ERROR_AUTH"));
+        super(ITools.getMensaje("AUTH_ERROR"));
     }
 
     public AuthException(String aMensaje) {

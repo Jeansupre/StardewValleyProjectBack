@@ -27,4 +27,7 @@ public class Ubicacion implements Serializable {
     @Column(name = "nombre", nullable = false, length = 250)
     private String nombre;
 
+    @Column(name = "codigo", nullable = false)
+    private String codigo;
+
 }
