@@ -1,9 +1,6 @@
 package com.jean.stardew_valley_api.service.interfaces;
 
-import com.jean.stardew_valley_api.dto.CrearAldeanoRequestDTO;
-import com.jean.stardew_valley_api.dto.CrearCategoriasRequestDTO;
-import com.jean.stardew_valley_api.dto.CrearItemRequestDTO;
-import com.jean.stardew_valley_api.dto.CrearUsuarioDTO;
+import com.jean.stardew_valley_api.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -39,4 +36,12 @@ public interface IAdminService {
      * @return {@code true} si se creo el item
      */
     Boolean crearItem(CrearItemRequestDTO crearItemRequestDTO, MultipartFile img) throws IOException;
+
+    /**
+     * Metodo para crear una semilla
+     * @param crearSemillaRequestDTO DTO con los datos de la semilla a crear
+     * @param img Imagen de la semilla
+     * @return {@code true} si se creo la semilla
+     */
+    Boolean crearSemilla(CrearSemillaRequestDTO crearSemillaRequestDTO, MultipartFile img) throws IOException;
 }

@@ -1,10 +1,7 @@
 package com.jean.stardew_valley_api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jean.stardew_valley_api.dto.CrearAldeanoRequestDTO;
-import com.jean.stardew_valley_api.dto.CrearCategoriasRequestDTO;
-import com.jean.stardew_valley_api.dto.CrearItemRequestDTO;
-import com.jean.stardew_valley_api.dto.CrearUsuarioDTO;
+import com.jean.stardew_valley_api.dto.*;
 import com.jean.stardew_valley_api.security.annotations.RequireJwtVerification;
 import com.jean.stardew_valley_api.service.interfaces.IAdminService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -110,6 +107,29 @@ public class AdminController {
         CrearItemRequestDTO crearItemRequestDTO = mapper.readValue(jsonData, CrearItemRequestDTO.class);
 
         Boolean resultado = adminService.crearItem(crearItemRequestDTO, img);
+        return new ResponseEntity<>(resultado, HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "crearSemilla",
+            description = "Endpoint para crear una semilla",
+            tags = {"Admin"},
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "true si se creó la semilla",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Boolean.class)
+                            ))
+            }
+    )
+    @PostMapping("/crearSemilla")
+    public ResponseEntity<Boolean> crearSemilla(@RequestPart("data") String jsonData,
+                                                @RequestPart("img") MultipartFile img) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        CrearSemillaRequestDTO crearSemillaRequestDTO = mapper.readValue(jsonData, CrearSemillaRequestDTO.class);
+
+        Boolean resultado = adminService.crearSemilla(crearSemillaRequestDTO, img);
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
 
