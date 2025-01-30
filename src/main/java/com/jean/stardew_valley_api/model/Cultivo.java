@@ -51,7 +51,7 @@ public class Cultivo implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_semilla", insertable=false, updatable=false)
-    private Item semilla;
+    private Semilla semilla;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_estacion", insertable=false, updatable=false)

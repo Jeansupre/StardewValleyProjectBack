@@ -1,12 +1,10 @@
 package com.jean.stardew_valley_api.service.impl;
 
-import com.jean.stardew_valley_api.dto.CrearAldeanoRequestDTO;
-import com.jean.stardew_valley_api.dto.CrearCategoriasRequestDTO;
-import com.jean.stardew_valley_api.dto.CrearItemRequestDTO;
-import com.jean.stardew_valley_api.dto.CrearUsuarioDTO;
+import com.jean.stardew_valley_api.dto.*;
 import com.jean.stardew_valley_api.exceptions.AuthException;
 import com.jean.stardew_valley_api.mappers.IAldeanoMapper;
 import com.jean.stardew_valley_api.mappers.IItemMapper;
+import com.jean.stardew_valley_api.mappers.ISemillaMapper;
 import com.jean.stardew_valley_api.mappers.IUsuarioMapper;
 import com.jean.stardew_valley_api.model.*;
 import com.jean.stardew_valley_api.repository.*;
@@ -34,10 +32,12 @@ public class AdminServiceImpl implements IAdminService {
     private final ICategoriaRepository categoriaRepository;
     private final IAldeanoRepository aldeanoRepository;
     private final IUsuarioRepository usuarioRepository;
+    private final ISemillaRepository semillaRepository;
     private final IItemRepository itemRepository;
 
     private final IAldeanoMapper aldeanoMapper;
     private final IUsuarioMapper usuarioMapper;
+    private final ISemillaMapper semillaMapper;
     private final IItemMapper itemMapper;
 
     private final JwtService jwtService;
@@ -156,6 +156,27 @@ public class AdminServiceImpl implements IAdminService {
             itemRepository.save(itemCrear);
         } catch (Exception e) {
             log.error(ITools.getMensaje("ERROR_CREATE_ITEM"), e);
+            throw e;
+        }
+        return true;
+    }
+
+    /**
+     * Metodo para crear una semilla
+     *
+     * @param crearSemillaRequestDTO DTO con los datos de la semilla a crear
+     * @param img                    Imagen de la semilla
+     * @return {@code true} si se creo la semilla
+     */
+    @Override
+    public Boolean crearSemilla(CrearSemillaRequestDTO crearSemillaRequestDTO, MultipartFile img) throws IOException {
+        try {
+            byte[] imgByte = img.getBytes();
+            Semilla semillaCrear = semillaMapper.crearSemillaRequestDTOtoSemilla(crearSemillaRequestDTO);
+            semillaCrear.setImagen(imgByte);
+            semillaRepository.save(semillaCrear);
+        } catch (Exception e) {
+            log.error(ITools.getMensaje("ERROR_CREATE_SEED"), e);
             throw e;
         }
         return true;

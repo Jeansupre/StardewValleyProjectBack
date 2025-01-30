@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
 import java.util.Date;
 
 @Setter
@@ -28,9 +29,6 @@ public class JwtService {
     @Value("${authorization.seed}")
     String secret;
 
-    @Value("${authorization.expiration}")
-    long expirationTime;
-
     /**
      * Genera un token JWT
      * @param usuarioRol {@link UsuarioRol} Usuario y rol a generar el token
@@ -43,7 +41,7 @@ public class JwtService {
                     .header().type("JWT").and()
                     .claim("ID_USUARIO", usuarioRol.getUsuario().getId())
                     .claim("ID_ROL", usuarioRol.getRol().getId())
-                    .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                    .expiration(getExpirationDateFromTokenByTomorrow())
                     .issuedAt(new Date())
                     .signWith(key, Jwts.SIG.HS256)
                     .compact();
@@ -99,5 +97,24 @@ public class JwtService {
      */
     private boolean isTokenExpired(Claims claims) {
         return claims.getExpiration().before(new Date());
+    }
+
+    /**
+     * Genera la fecha de expiración del token para mañana
+     * @return {@link Date} con fecha de mañana a las 00:00:00.0000
+     */
+    private Date getExpirationDateFromTokenByTomorrow() {
+        Calendar calendar = Calendar.getInstance();
+
+        // Avanza un día
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+
+        // Establece la hora a 00:00:00
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        return calendar.getTime();
     }
 }

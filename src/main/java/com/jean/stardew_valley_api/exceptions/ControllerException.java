@@ -5,6 +5,7 @@ import com.jean.stardew_valley_api.dto.ErrorDTO;
 import com.jean.stardew_valley_api.util.ITools;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,12 +14,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import javax.naming.SizeLimitExceededException;
 import java.io.IOException;
@@ -46,7 +49,8 @@ public class ControllerException extends Exception implements Serializable {
      * @param e        excepción que se lanza
      * @return ResponseEntity<>
      */
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestPartException.class,
+            MissingServletRequestParameterException.class})
     public ResponseEntity<ErrorDTO> invalidoObjetoDeEntrada(HttpServletRequest request,
                                                             MethodArgumentNotValidException e) {
 
@@ -130,7 +134,7 @@ public class ControllerException extends Exception implements Serializable {
     /**
      * Atrapa excepciones de transacción no exitosa por errores en la base de datos
      */
-    @ExceptionHandler({SQLException.class})
+    @ExceptionHandler({SQLException.class, DataIntegrityViolationException.class})
     public ResponseEntity<ErrorDTO> transaccionNoExitosaErroresDB(HttpServletRequest request, Exception e) {
 
         saveExceptionLog(e, null, true);
@@ -143,7 +147,6 @@ public class ControllerException extends Exception implements Serializable {
                         request.getRequestURI(), false),
                 codigoHttp);
     }
-
 
     /**
      * Atrapa valores nulos en capa de servicio
